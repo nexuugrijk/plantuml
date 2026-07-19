@@ -18,6 +18,7 @@ import shlex
 import shutil
 import subprocess
 import tempfile
+import time
 from contextlib import contextmanager
 
 from docutils import nodes
@@ -79,7 +80,7 @@ if os.name == 'nt':
                 os.replace(src, dst)
             except OSError as err:
                 is_last_attempt = attempt == attempts - 1
-                if not is_retryable_error or is_last_attempt:
+                if not is_retryable_error(err) or is_last_attempt:
                     raise
                 attempt = attempt + 1
                 time.sleep(delay_seconds)
