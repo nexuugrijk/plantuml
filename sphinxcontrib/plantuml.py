@@ -18,6 +18,7 @@ import shlex
 import shutil
 import subprocess
 import tempfile
+import time
 from contextlib import contextmanager
 
 from docutils import nodes
@@ -68,18 +69,18 @@ if os.name == 'nt':
             error.errno in RETRYABLE_ERRNOS
             or getattr(error, "winerror", None) in RETRYABLE_WINERRORS
         )
-    
+
     def rename_with_retry(src, dst, attempts=50, delay_seconds=0.1):
         if attempts < 1:
             raise ValueError("Minimum attempts is 1, provided attempts = {attempts}")
-            
+
         attempt = 0
         while True:
             try:
                 os.replace(src, dst)
             except OSError as err:
                 is_last_attempt = attempt == attempts - 1
-                if not is_retryable_error or is_last_attempt:
+                if not is_retryable_error(err) or is_last_attempt:
                     raise
                 attempt = attempt + 1
                 time.sleep(delay_seconds)
