@@ -78,6 +78,7 @@ if os.name == 'nt':
         while True:
             try:
                 os.replace(src, dst)
+                return
             except OSError as err:
                 is_last_attempt = attempt == attempts - 1
                 if not is_retryable_error(err) or is_last_attempt:
